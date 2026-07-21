@@ -8,6 +8,29 @@ ProofBuild creates verifiable, restorable build capsules and stores them on File
 
 It hashes the selected project files, records Git and build evidence, packages everything into a portable archive, and produces a receipt that can be checked locally or against a copy retrieved from Filecoin.
 
+## For judges: run the live demo
+
+With Node.js 22 or newer installed, run:
+
+```bash
+npx --yes github:shiv-69-debug/proofbuild demo
+```
+
+This installs ProofBuild directly from GitHub, downloads the public capsule from Filecoin Calibration, and checks its byte length and SHA-256 against the published receipt. It does not require a wallet, private key, FIL, or USDFC.
+
+Expected final output:
+
+```text
+Downloaded capsule matches the published receipt
+Live Filecoin verification passed
+```
+
+To inspect the full CLI:
+
+```bash
+npx --yes github:shiv-69-debug/proofbuild --help
+```
+
 ## Live proof
 
 ProofBuild published its own release capsule to Filecoin Calibration and downloaded it again for byte-for-byte verification.
@@ -155,6 +178,7 @@ If the local archive is missing, ProofBuild downloads the Filecoin copy, verifie
 | Command | Purpose |
 | --- | --- |
 | `proofbuild init` | Initialize a project |
+| `proofbuild demo` | Download and verify the public Filecoin demo capsule |
 | `proofbuild snapshot` | Test, hash, package, and optionally publish a build |
 | `proofbuild publish` | Upload an existing capsule to Filecoin |
 | `proofbuild verify` | Verify local, remote, or source-tree integrity |

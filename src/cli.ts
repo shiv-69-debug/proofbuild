@@ -11,6 +11,7 @@ import { snapshotCommand } from "./commands/snapshot.js";
 import { verifyCommand } from "./commands/verify.js";
 import { viewCommand } from "./commands/view.js";
 import { createWalletCommand } from "./commands/wallet.js";
+import { demoCommand } from "./commands/demo.js";
 
 try {
   process.loadEnvFile(".env.proofbuild");
@@ -29,6 +30,10 @@ program.command("init")
   .description("Initialize ProofBuild in a project")
   .option("--root <path>", "project directory")
   .action(async (options) => initCommand(options.root));
+
+program.command("demo")
+  .description("Download and verify ProofBuild's public Filecoin capsule")
+  .action(async () => demoCommand());
 
 program.command("snapshot")
   .description("Create a hashed, restorable build capsule")

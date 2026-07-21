@@ -1,6 +1,6 @@
 import { readFile } from "node:fs/promises";
 import { createPublicClient, formatEther, formatUnits, http, type Address } from "viem";
-import { privateKeyToAccount } from "viem/accounts";
+import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import type { FilecoinCopy, FilecoinRecord, NetworkName } from "../types.js";
 
 type UnknownRecord = Record<string, unknown>;
@@ -24,11 +24,9 @@ function normalizeCopy(value: unknown): FilecoinCopy {
   };
 }
 
-function privateKey(): `0x${string}` {
+function configuredPrivateKey(): `0x${string}` | undefined {
   const value = process.env.PROOFBUILD_PRIVATE_KEY ?? process.env.FILECOIN_PRIVATE_KEY;
-  if (!value) {
-    throw new Error("Set PROOFBUILD_PRIVATE_KEY before publishing or remote retrieval.");
-  }
+  if (!value) return undefined;
   const normalized = value.startsWith("0x") ? value : `0x${value}`;
   if (!/^0x[0-9a-fA-F]{64}$/.test(normalized)) {
     throw new Error("PROOFBUILD_PRIVATE_KEY must be a 32-byte hex private key.");
@@ -36,10 +34,14 @@ function privateKey(): `0x${string}` {
   return normalized as `0x${string}`;
 }
 
-async function createSynapse(network: NetworkName, withCDN: boolean) {
+async function createSynapse(network: NetworkName, withCDN: boolean, requireConfiguredWallet: boolean) {
   const sdk = await import("@filoz/synapse-sdk");
+  const privateKey = configuredPrivateKey();
+  if (requireConfiguredWallet && !privateKey) {
+    throw new Error("Set PROOFBUILD_PRIVATE_KEY before publishing.");
+  }
   return sdk.Synapse.create({
-    account: privateKeyToAccount(privateKey()),
+    account: privateKeyToAccount(privateKey ?? generatePrivateKey()),
     source: "proofbuild",
     chain: network === "mainnet" ? sdk.mainnet : sdk.calibration,
     withCDN,
@@ -52,7 +54,7 @@ export async function uploadCapsule(
   withCDN: boolean,
 ): Promise<FilecoinRecord> {
   const bytes = await readFile(archivePath);
-  const synapse = await createSynapse(network, withCDN);
+  const synapse = await createSynapse(network, withCDN, true);
   const preparation = await synapse.storage.prepare({ dataSize: BigInt(bytes.byteLength) });
   if (preparation.transaction) await preparation.transaction.execute();
 
@@ -73,7 +75,7 @@ export async function uploadCapsule(
 }
 
 export async function downloadCapsule(pieceCid: string, network: NetworkName, withCDN: boolean): Promise<Uint8Array> {
-  const synapse = await createSynapse(network, withCDN);
+  const synapse = await createSynapse(network, withCDN, false);
   return synapse.storage.download({ pieceCid });
 }
 
