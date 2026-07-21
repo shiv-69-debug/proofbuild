@@ -1,0 +1,17 @@
+{
+  "buildCommand": "npm test",
+  "exclude": [
+    "node_modules/**",
+    ".git/**",
+    ".proofbuild/**",
+    ".env*",
+    "*.pem",
+    "*.key",
+    "*.log"
+  ],
+  "include": [
+    "**/*"
+  ],
+  "network": "calibration",
+  "withCDN": false
+}

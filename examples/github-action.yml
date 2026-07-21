@@ -1,0 +1,30 @@
+name: ProofBuild Release Capsule
+
+on:
+  workflow_dispatch:
+  release:
+    types: [published]
+
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+      - name: Create and publish ProofBuild capsule
+        env:
+          PROOFBUILD_PRIVATE_KEY: ${{ secrets.PROOFBUILD_PRIVATE_KEY }}
+        run: node dist/cli.js snapshot --no-build --publish --network calibration --notes "GitHub release ${{ github.ref_name }}"
+      - name: Upload portable receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: proofbuild-receipt
+          path: .proofbuild/receipts/

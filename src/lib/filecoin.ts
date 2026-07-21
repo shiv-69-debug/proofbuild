@@ -1,0 +1,77 @@
+import { readFile } from "node:fs/promises";
+import { privateKeyToAccount } from "viem/accounts";
+import type { FilecoinCopy, FilecoinRecord, NetworkName } from "../types.js";
+
+type UnknownRecord = Record<string, unknown>;
+
+function readString(source: UnknownRecord, keys: string[]): string | undefined {
+  for (const key of keys) {
+    const value = source[key];
+    if (value !== undefined && value !== null) return String(value);
+  }
+  return undefined;
+}
+
+function normalizeCopy(value: unknown): FilecoinCopy {
+  const copy = (value && typeof value === "object" ? value : {}) as UnknownRecord;
+  const provider = (copy.provider && typeof copy.provider === "object" ? copy.provider : {}) as UnknownRecord;
+  return {
+    providerId: readString(copy, ["providerId", "serviceProvider"]) ?? readString(provider, ["id", "serviceProvider"]),
+    dataSetId: readString(copy, ["dataSetId", "datasetId"]),
+    pieceId: readString(copy, ["pieceId"]),
+    transactionHash: readString(copy, ["transactionHash", "txHash", "hash"]),
+  };
+}
+
+function privateKey(): `0x${string}` {
+  const value = process.env.PROOFBUILD_PRIVATE_KEY ?? process.env.FILECOIN_PRIVATE_KEY;
+  if (!value) {
+    throw new Error("Set PROOFBUILD_PRIVATE_KEY before publishing or remote retrieval.");
+  }
+  const normalized = value.startsWith("0x") ? value : `0x${value}`;
+  if (!/^0x[0-9a-fA-F]{64}$/.test(normalized)) {
+    throw new Error("PROOFBUILD_PRIVATE_KEY must be a 32-byte hex private key.");
+  }
+  return normalized as `0x${string}`;
+}
+
+async function createSynapse(network: NetworkName, withCDN: boolean) {
+  const sdk = await import("@filoz/synapse-sdk");
+  return sdk.Synapse.create({
+    account: privateKeyToAccount(privateKey()),
+    source: "proofbuild",
+    chain: network === "mainnet" ? sdk.mainnet : sdk.calibration,
+    withCDN,
+  });
+}
+
+export async function uploadCapsule(
+  archivePath: string,
+  network: NetworkName,
+  withCDN: boolean,
+): Promise<FilecoinRecord> {
+  const bytes = await readFile(archivePath);
+  const synapse = await createSynapse(network, withCDN);
+  const preparation = await synapse.storage.prepare({ dataSize: BigInt(bytes.byteLength) });
+  if (preparation.transaction) await preparation.transaction.execute();
+
+  const result = await synapse.storage.upload(bytes);
+  const loose = result as unknown as UnknownRecord;
+  const copies = Array.isArray(loose.copies) ? loose.copies.map(normalizeCopy) : [];
+  const failures = Array.isArray(loose.failedAttempts) ? loose.failedAttempts.length : 0;
+  return {
+    network,
+    pieceCid: String(loose.pieceCid),
+    size: String(loose.size ?? bytes.byteLength),
+    complete: Boolean(loose.complete),
+    copies,
+    failedAttempts: failures,
+    uploadedAt: new Date().toISOString(),
+    withCDN,
+  };
+}
+
+export async function downloadCapsule(pieceCid: string, network: NetworkName, withCDN: boolean): Promise<Uint8Array> {
+  const synapse = await createSynapse(network, withCDN);
+  return synapse.storage.download({ pieceCid });
+}

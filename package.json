@@ -1,0 +1,47 @@
+{
+  "name": "proofbuild",
+  "version": "0.1.0",
+  "description": "Create, verify, publish, and restore verifiable build capsules on Filecoin Onchain Cloud.",
+  "type": "module",
+  "bin": {
+    "proofbuild": "dist/cli.js"
+  },
+  "files": ["dist", "README.md", "FEATURES.md", "LICENSE"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsx src/cli.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "check": "npm run build && npm test"
+  },
+  "keywords": ["filecoin", "onchain-cloud", "provenance", "reproducible-builds", "developer-tools"],
+  "author": "ProofBuild contributors",
+  "license": "MIT",
+  "homepage": "https://shiv-69-debug.github.io/proofbuild/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shiv-69-debug/proofbuild.git"
+  },
+  "bugs": {
+    "url": "https://github.com/shiv-69-debug/proofbuild/issues"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "@filoz/synapse-sdk": "^1.1.0",
+    "commander": "^15.0.0",
+    "fast-glob": "^3.3.3",
+    "open": "^10.2.0",
+    "picocolors": "^1.1.1",
+    "tar": "^7.5.1",
+    "viem": "^2.38.5"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.0",
+    "@types/tar": "^6.1.13",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.8"
+  }
+}
