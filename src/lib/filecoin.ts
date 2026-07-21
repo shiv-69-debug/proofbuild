@@ -1,4 +1,5 @@
 import { readFile } from "node:fs/promises";
+import { createPublicClient, formatEther, formatUnits, http, type Address } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import type { FilecoinCopy, FilecoinRecord, NetworkName } from "../types.js";
 
@@ -74,4 +75,28 @@ export async function uploadCapsule(
 export async function downloadCapsule(pieceCid: string, network: NetworkName, withCDN: boolean): Promise<Uint8Array> {
   const synapse = await createSynapse(network, withCDN);
   return synapse.storage.download({ pieceCid });
+}
+
+export async function getWalletBalances(address: Address, network: NetworkName): Promise<{ fil: string; usdfc: string }> {
+  const sdk = await import("@filoz/synapse-sdk");
+  const chain = network === "mainnet" ? sdk.mainnet : sdk.calibration;
+  const client = createPublicClient({ chain, transport: http() });
+  const [filBalance, usdfcBalance, decimals] = await Promise.all([
+    client.getBalance({ address }),
+    client.readContract({
+      address: chain.contracts.usdfc.address,
+      abi: chain.contracts.usdfc.abi,
+      functionName: "balanceOf",
+      args: [address],
+    }),
+    client.readContract({
+      address: chain.contracts.usdfc.address,
+      abi: chain.contracts.usdfc.abi,
+      functionName: "decimals",
+    }),
+  ]);
+  return {
+    fil: formatEther(filBalance),
+    usdfc: formatUnits(usdfcBalance, decimals),
+  };
 }
