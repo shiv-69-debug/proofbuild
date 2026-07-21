@@ -44,4 +44,6 @@
 - [x] Automated build and workflow tests
 - [x] Onchain wallet balance checks in `proofbuild doctor`
 - [x] Public GitHub repository and Pages showcase
-- [ ] Fund Calibration wallet and publish the final live Piece CID receipt
+- [x] Fund Calibration wallet and publish the final live Piece CID receipt
+- [x] Download the live Filecoin capsule and verify its SHA-256
+- [x] Publish a sanitized machine-readable proof for judges

@@ -10,31 +10,29 @@ ProofBuild has a dedicated Calibration wallet prepared for the public demonstrat
 
 The private key is stored only in the ignored local `.env.proofbuild` file and as the repository's encrypted `PROOFBUILD_PRIVATE_KEY` GitHub Actions secret.
 
-## Current onchain readiness
+## Completed onchain demonstration
 
-- Calibration tFIL balance: `0`
-- Calibration tUSDFC balance: `0`
+- Calibration funding: complete
 - Synapse SDK connection: verified
 - Calibration chain ID: `314159`
-- Filecoin upload/download code: compiled and tested locally
+- Filecoin upload: passed
+- Filecoin remote download: passed
+- Remote SHA-256 verification: passed
+- Piece CID: `bafkzcibe4oxagdb6aazxaflnd47kkym73pv3tvgh7sg34gbvcuhnhxunwobudilade`
 
-## Required faucet step
+## Reproduce the demonstration
 
-1. Request Calibration tFIL for the wallet from `https://faucet.calibnet.chainsafe-fil.io/funds.html`.
-2. Request Calibration tUSDFC from `https://forest-explorer.chainsafe.dev/faucet/calibnet_usdfc`.
-3. Run `proofbuild doctor` until both balances are greater than zero.
-4. Run:
+1. Fund a Calibration wallet with tFIL and tUSDFC.
+2. Run:
 
 ```bash
 proofbuild snapshot --publish --network calibration --ai-log AI_BUILD_LOG.md --notes "Public FilecoinTLDR challenge demo"
 ```
 
-5. Verify the real remote copy:
+3. Verify the real remote copy:
 
 ```bash
 proofbuild verify <receipt-id> --remote
 ```
 
-6. Commit a sanitized copy of the resulting receipt under `showcase/` so judges can see the real Piece CID without access to local files.
-
-The faucets require interactive browser checks, so funding cannot be completed by unattended CLI automation.
+4. Inspect `showcase/live-filecoin-receipt.json` for the published demonstration proof.

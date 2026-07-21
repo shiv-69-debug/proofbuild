@@ -6,11 +6,17 @@ Public showcase: `https://shiv-69-debug.github.io/proofbuild/`
 
 Source repository: `https://github.com/shiv-69-debug/proofbuild`
 
+Live Filecoin Piece CID: `bafkzcibe4oxagdb6aazxaflnd47kkym73pv3tvgh7sg34gbvcuhnhxunwobudilade`
+
 ProofBuild packages a project, hashes every included file, records Git and build evidence, and creates a portable receipt. Capsules work completely offline and can optionally be uploaded to Filecoin Onchain Cloud through the official Synapse SDK for durable, independently retrievable storage.
 
 ## Why it exists
 
 Git records source history, but it does not preserve the exact build capsule, test output, AI session evidence, or a remotely verifiable copy of those artifacts. ProofBuild turns those materials into one restorable unit with a content integrity receipt.
+
+## Live Filecoin proof
+
+ProofBuild published its own 116-file challenge build to Filecoin Calibration with two provider copies. It then downloaded the capsule through the Synapse SDK and verified that its SHA-256 matched the local receipt. See `showcase/live-filecoin-receipt.json` for the sanitized machine-readable evidence.
 
 ## Features
 

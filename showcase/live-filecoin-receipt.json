@@ -1,0 +1,36 @@
+{
+  "schema": "proofbuild-public-proof/v1",
+  "receiptId": "20260721T092326Z-18033b",
+  "project": "proofbuild",
+  "createdAt": "2026-07-21T09:23:29.321Z",
+  "filecoin": {
+    "network": "calibration",
+    "pieceCid": "bafkzcibe4oxagdb6aazxaflnd47kkym73pv3tvgh7sg34gbvcuhnhxunwobudilade",
+    "complete": true,
+    "uploadedAt": "2026-07-21T09:26:33.732Z",
+    "failedAttempts": 0,
+    "copies": [
+      {
+        "providerId": "4",
+        "dataSetId": "20893",
+        "pieceId": "0"
+      },
+      {
+        "providerId": "2",
+        "dataSetId": "20892",
+        "pieceId": "0"
+      }
+    ]
+  },
+  "capsule": {
+    "sha256": "3f51d6160f66e450a69943b014829077f08bcf0064347d0e38b715c6999edd14",
+    "bytes": 74909,
+    "fileCount": 116
+  },
+  "verification": {
+    "localCapsuleHash": "passed",
+    "remoteFilecoinDownload": "passed",
+    "remoteSha256Match": "passed",
+    "sourceManifest": "116/116 files matched"
+  }
+}
