@@ -16,14 +16,16 @@ With Node.js 22 or newer installed, run:
 npx --yes github:shiv-69-debug/proofbuild demo
 ```
 
-This installs ProofBuild directly from GitHub, downloads the public capsule from Filecoin Calibration, and checks its byte length and SHA-256 against the published receipt. It does not require a wallet, private key, FIL, or USDFC.
+This installs ProofBuild directly from GitHub, downloads the public capsule from Filecoin Calibration, checks its byte length and SHA-256, confirms both storage transactions, and queries the live PDP verifier records. It does not require a wallet, private key, FIL, or USDFC.
 
 Expected final output:
 
 ```text
 Downloaded capsule matches the published receipt
-Live Filecoin verification passed
+Live Filecoin download and PDP verification passed
 ```
+
+[Watch the updated 40-second demo video](docs/assets/submission/proofbuild-demo.mp4). It shows the fresh Calibration publish with both real storage transaction hashes followed by `verify --remote --onchain`.
 
 To inspect the full CLI:
 
@@ -37,10 +39,10 @@ ProofBuild published its own release capsule to Filecoin Calibration and downloa
 
 | Field | Value |
 | --- | --- |
-| Piece CID | `bafkzcibe4oxagdb6aazxaflnd47kkym73pv3tvgh7sg34gbvcuhnhxunwobudilade` |
-| Capsule | 74,909 bytes, 116 files |
-| Storage | 2 provider copies, 0 failed attempts |
-| Verification | Remote SHA-256 match passed |
+| Piece CID | `bafkzcibeu3xbgd2arlsl5ydi42xcbaci554duvmxrjqiiqf7vltffd2wcmrv4bi2dq` |
+| Capsule | 714,970 bytes, 122 files |
+| Storage | 2 provider copies with confirmed transaction hashes |
+| Verification | Remote SHA-256, transactions, datasets, pieces, and PDP status passed |
 
 See [`showcase/FILECOIN_PROOF.md`](showcase/FILECOIN_PROOF.md) or the [machine-readable receipt](showcase/live-filecoin-receipt.json).
 
@@ -159,6 +161,14 @@ Download the Filecoin copy and compare its SHA-256:
 proofbuild verify <receipt-id> --remote
 ```
 
+Verify the receipt directly against Filecoin's Warm Storage and PDP verifier contracts:
+
+```bash
+proofbuild verify <receipt-id> --onchain
+```
+
+This confirms that each recorded dataset is live, the Piece CID is registered with the expected piece and provider IDs, any recorded storage transaction succeeded, and the PDP proof schedule is not overdue. New publishes also print and save the publisher address, preparation transaction hash, per-provider storage transaction hashes, dataset IDs, piece IDs, and retrieval URLs.
+
 Compare current project files against the receipt:
 
 ```bash
@@ -181,7 +191,7 @@ If the local archive is missing, ProofBuild downloads the Filecoin copy, verifie
 | `proofbuild demo` | Download and verify the public Filecoin demo capsule |
 | `proofbuild snapshot` | Test, hash, package, and optionally publish a build |
 | `proofbuild publish` | Upload an existing capsule to Filecoin |
-| `proofbuild verify` | Verify local, remote, or source-tree integrity |
+| `proofbuild verify` | Verify local, remote, source-tree, or on-chain PDP integrity |
 | `proofbuild restore` | Restore a verified capsule |
 | `proofbuild list` | List project receipts |
 | `proofbuild view` | Open a receipt dashboard |
@@ -204,7 +214,7 @@ Run `proofbuild <command> --help` for command-specific options.
 npm run check
 ```
 
-The repository includes unit tests, an end-to-end local capsule test, CI, a GitHub Pages showcase, and a documented live Filecoin receipt.
+The repository includes unit tests, an end-to-end local capsule test, CI, a GitHub Pages showcase, an updated demo video, and a transaction-backed live Filecoin receipt. Run `proofbuild demo` for a wallet-free remote download, transaction confirmation, and live PDP check; use `proofbuild verify <receipt-id> --onchain` for normal project receipts.
 
 ## License
 

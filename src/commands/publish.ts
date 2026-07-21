@@ -19,11 +19,23 @@ export async function publishCommand(
   const withCDN = options.withCdn ?? config.withCDN ?? false;
   const archivePath = archivePathFromReceipt(root, receipt.capsule.archiveFile);
   output.heading(`Publishing ${receipt.id}`);
-  receipt.filecoin = await uploadCapsule(archivePath, network, withCDN);
+  receipt.filecoin = await uploadCapsule(archivePath, network, withCDN, {
+    proofbuildReceiptId: receipt.id,
+    capsuleSha256: receipt.capsule.sha256,
+    project: receipt.project.name,
+  });
   await writeReceipt(receiptPath, receipt);
   await writeReceiptViewer(receiptPath, receipt);
   output.success("Capsule published to Filecoin Onchain Cloud");
   output.detail("Piece CID", receipt.filecoin.pieceCid);
   output.detail("Network", receipt.filecoin.network);
+  output.detail("Publisher", receipt.filecoin.publisher);
+  if (receipt.filecoin.preparationTransactionHash) {
+    output.detail("Funding tx", receipt.filecoin.preparationTransactionHash);
+  }
   output.detail("Copies", receipt.filecoin.copies.length);
+  for (const copy of receipt.filecoin.copies) {
+    output.detail(`Provider ${copy.providerId}`, `dataset ${copy.dataSetId}, piece ${copy.pieceId}`);
+    if (copy.transactionHash) output.detail("Storage tx", copy.transactionHash);
+  }
 }

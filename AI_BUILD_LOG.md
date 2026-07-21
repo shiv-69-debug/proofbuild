@@ -15,6 +15,13 @@ AI helped accelerate a few parts of the development process:
 - helping debug TypeScript and integration issues;
 - assisting with test cases and documentation drafts.
 
+## Tools and concrete outcomes
+
+- **ChatGPT:** reviewed the bounty rubric against the repository, identified the missing visible transaction evidence and PDP verification path, and produced the prioritized hardening plan.
+- **OpenAI Codex CLI:** inspected the installed Synapse SDK types and implementation, found the on-chain `pieceStatus()` PDP verifier flow, and implemented `verify --onchain` without substituting a local hash check.
+- **OpenAI Codex CLI:** extended publish receipts to retain the publisher, preparation transaction, per-provider storage transactions, dataset IDs, piece IDs, copy roles, and retrieval URLs, then compiled and exercised the command against the live Calibration receipt.
+- **OpenAI Codex CLI:** ran a fresh funded Calibration publish, captured both real provider transaction hashes, verified the remote download and PDP records, and rendered the resulting command evidence into the updated public demo video.
+
 All product decisions, acceptance of changes, wallet operations, live-network verification, and final publishing remained under my control.
 
 ## Final verification

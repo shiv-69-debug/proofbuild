@@ -71,9 +71,10 @@ program.command("publish")
   }));
 
 program.command("verify")
-  .description("Verify capsule integrity and optionally source or remote storage")
+  .description("Verify capsule integrity, Filecoin storage, and PDP records")
   .argument("<receipt>", "receipt ID or JSON path")
   .option("--remote", "download from Filecoin and compare its SHA-256")
+  .option("--onchain", "verify datasets, pieces, transactions, and PDP status on-chain")
   .option("--source", "compare the current source tree to the manifest")
   .action(async (receipt, options) => verifyCommand(receipt, options));
 

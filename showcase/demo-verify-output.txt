@@ -1,0 +1,23 @@
+﻿
+Verifying 20260721T123008Z-b1cfa5
+✓ Local capsule hash matches receipt
+→ Downloading bafkzcibeu3xbgd2arlsl5ydi42xcbaci554duvmxrjqiiqf7vltffd2wcmrv4bi2dq from Filecoin
+✓ Remote Filecoin capsule matches receipt
+→ Checking 2 storage copies on the PDP verifier
+  Provider 4     dataset 20893, piece 1
+  Dataset live   true
+  Active pieces  2
+  Storage tx     0xc132eec4974bb85290a31c2c71b75afc635289ee389bd9a4f0a9dfa3072579f9
+  Tx status      confirmed
+  Last PDP proof 2026-07-21T11:17:00.000Z
+  Next PDP proof 2026-07-21T13:27:00.000Z
+  Proof overdue  false
+  Provider 2     dataset 20892, piece 1
+  Dataset live   true
+  Active pieces  2
+  Storage tx     0x88140981d7dd58c58723860ba7cb567e4a08b3b846dc6a6765fc4fc2899ecd7a
+  Tx status      confirmed
+  Last PDP proof 2026-07-21T11:17:00.000Z
+  Next PDP proof 2026-07-21T13:27:00.000Z
+  Proof overdue  false
+✓ On-chain PDP records match the receipt

@@ -110,8 +110,20 @@ export async function snapshotCommand(options: SnapshotOptions): Promise<ProofBu
     const network = options.network ?? config.network ?? "calibration";
     const withCDN = options.withCdn ?? config.withCDN ?? false;
     output.step(`Publishing capsule to Filecoin ${network}`);
-    receipt.filecoin = await uploadCapsule(archivePath, network, withCDN);
+    receipt.filecoin = await uploadCapsule(archivePath, network, withCDN, {
+      proofbuildReceiptId: receipt.id,
+      capsuleSha256: receipt.capsule.sha256,
+      project: receipt.project.name,
+    });
     output.success(`Stored as ${receipt.filecoin.pieceCid}`);
+    output.detail("Publisher", receipt.filecoin.publisher);
+    if (receipt.filecoin.preparationTransactionHash) {
+      output.detail("Funding tx", receipt.filecoin.preparationTransactionHash);
+    }
+    for (const copy of receipt.filecoin.copies) {
+      output.detail(`Provider ${copy.providerId}`, `dataset ${copy.dataSetId}, piece ${copy.pieceId}`);
+      if (copy.transactionHash) output.detail("Storage tx", copy.transactionHash);
+    }
   }
 
   await writeReceipt(receiptPath, receipt);

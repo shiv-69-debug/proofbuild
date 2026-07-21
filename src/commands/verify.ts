@@ -1,12 +1,15 @@
 import path from "node:path";
 import { access } from "node:fs/promises";
 import { archivePathFromReceipt } from "../lib/archive.js";
-import { downloadCapsule } from "../lib/filecoin.js";
+import { downloadCapsule, verifyCapsuleOnchain } from "../lib/filecoin.js";
 import { sha256Bytes, sha256File } from "../lib/hash.js";
 import { output } from "../lib/output.js";
 import { projectRootFromReceipt, readReceipt, resolveReceipt } from "../lib/receipt.js";
 
-export async function verifyCommand(reference: string, options: { remote?: boolean; source?: boolean }): Promise<void> {
+export async function verifyCommand(
+  reference: string,
+  options: { remote?: boolean; source?: boolean; onchain?: boolean },
+): Promise<void> {
   const receiptPath = await resolveReceipt(reference, process.cwd());
   const root = projectRootFromReceipt(receiptPath);
   const receipt = await readReceipt(receiptPath);
@@ -34,6 +37,23 @@ export async function verifyCommand(reference: string, options: { remote?: boole
     const remoteHash = sha256Bytes(bytes);
     if (remoteHash !== receipt.capsule.sha256) throw new Error(`Remote capsule hash mismatch: ${remoteHash}`);
     output.success("Remote Filecoin capsule matches receipt");
+  }
+
+  if (options.onchain) {
+    if (!receipt.filecoin) throw new Error("Receipt has no Filecoin storage record.");
+    output.step(`Checking ${receipt.filecoin.copies.length} storage copies on the PDP verifier`);
+    const statuses = await verifyCapsuleOnchain(receipt.filecoin);
+    for (const status of statuses) {
+      output.detail(`Provider ${status.providerId}`, `dataset ${status.dataSetId}, piece ${status.pieceId}`);
+      output.detail("Dataset live", status.dataSetLive);
+      output.detail("Active pieces", status.activePieceCount);
+      if (status.transactionHash) output.detail("Storage tx", status.transactionHash);
+      if (status.transactionConfirmed !== undefined) output.detail("Tx status", "confirmed");
+      if (status.dataSetLastProven) output.detail("Last PDP proof", status.dataSetLastProven);
+      if (status.dataSetNextProofDue) output.detail("Next PDP proof", status.dataSetNextProofDue);
+      if (status.isProofOverdue !== undefined) output.detail("Proof overdue", status.isProofOverdue);
+    }
+    output.success("On-chain PDP records match the receipt");
   }
 
   if (options.source) {

@@ -1,36 +1,67 @@
 {
   "schema": "proofbuild-public-proof/v1",
-  "receiptId": "20260721T092326Z-18033b",
+  "evidenceType": "live-calibration-transaction-backed",
+  "receiptId": "20260721T123008Z-b1cfa5",
   "project": "proofbuild",
-  "createdAt": "2026-07-21T09:23:29.321Z",
+  "createdAt": "2026-07-21T12:30:09.257Z",
   "filecoin": {
     "network": "calibration",
-    "pieceCid": "bafkzcibe4oxagdb6aazxaflnd47kkym73pv3tvgh7sg34gbvcuhnhxunwobudilade",
+    "publisher": "0x4Ce9FD2D0C4bDB4Bbc4bC5A4cFf102476696dE59",
+    "pieceCid": "bafkzcibeu3xbgd2arlsl5ydi42xcbaci554duvmxrjqiiqf7vltffd2wcmrv4bi2dq",
     "complete": true,
-    "uploadedAt": "2026-07-21T09:26:33.732Z",
+    "uploadedAt": "2026-07-21T12:32:03.162Z",
     "failedAttempts": 0,
     "copies": [
       {
         "providerId": "4",
         "dataSetId": "20893",
-        "pieceId": "0"
+        "pieceId": "1",
+        "role": "primary",
+        "transactionHash": "0xc132eec4974bb85290a31c2c71b75afc635289ee389bd9a4f0a9dfa3072579f9",
+        "transactionConfirmed": true
       },
       {
         "providerId": "2",
         "dataSetId": "20892",
-        "pieceId": "0"
+        "pieceId": "1",
+        "role": "secondary",
+        "transactionHash": "0x88140981d7dd58c58723860ba7cb567e4a08b3b846dc6a6765fc4fc2899ecd7a",
+        "transactionConfirmed": true
       }
     ]
   },
   "capsule": {
-    "sha256": "3f51d6160f66e450a69943b014829077f08bcf0064347d0e38b715c6999edd14",
-    "bytes": 74909,
-    "fileCount": 116
+    "sha256": "0fadc49a16189d55af95a6805c6fec03a2db74e0b9c0df8341487b1b84041ccc",
+    "bytes": 714970,
+    "fileCount": 122
   },
   "verification": {
     "localCapsuleHash": "passed",
     "remoteFilecoinDownload": "passed",
     "remoteSha256Match": "passed",
-    "sourceManifest": "116/116 files matched"
+    "onchainCheckedAt": "2026-07-21T12:39:44.222Z",
+    "pdpVerifier": "passed",
+    "copies": [
+      {
+        "providerId": "4",
+        "dataSetId": "20893",
+        "pieceId": "1",
+        "dataSetLive": true,
+        "activePieceCount": "2",
+        "lastPdpProof": "2026-07-21T11:17:00.000Z",
+        "nextPdpProofDue": "2026-07-21T13:27:00.000Z",
+        "proofOverdue": false
+      },
+      {
+        "providerId": "2",
+        "dataSetId": "20892",
+        "pieceId": "1",
+        "dataSetLive": true,
+        "activePieceCount": "2",
+        "lastPdpProof": "2026-07-21T11:17:00.000Z",
+        "nextPdpProofDue": "2026-07-21T13:27:00.000Z",
+        "proofOverdue": false
+      }
+    ]
   }
 }

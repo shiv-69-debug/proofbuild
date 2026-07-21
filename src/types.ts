@@ -37,17 +37,37 @@ export interface FilecoinCopy {
   dataSetId?: string;
   pieceId?: string;
   transactionHash?: string;
+  role?: "primary" | "secondary";
+  retrievalUrl?: string;
+  isNewDataSet?: boolean;
 }
 
 export interface FilecoinRecord {
   network: NetworkName;
+  publisher?: string;
   pieceCid: string;
   size: string;
   complete: boolean;
   copies: FilecoinCopy[];
   failedAttempts: number;
+  preparationTransactionHash?: string;
   uploadedAt: string;
   withCDN: boolean;
+}
+
+export interface FilecoinOnchainCopyStatus {
+  providerId: string;
+  dataSetId: string;
+  pieceId: string;
+  dataSetLive: boolean;
+  activePieceCount: string;
+  transactionHash?: string;
+  transactionConfirmed?: boolean;
+  dataSetLastProven?: string;
+  dataSetNextProofDue?: string;
+  inChallengeWindow?: boolean;
+  isProofOverdue?: boolean;
+  retrievalUrl?: string;
 }
 
 export interface ProofBuildReceipt {

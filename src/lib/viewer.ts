@@ -23,11 +23,19 @@ export async function writeReceiptViewer(receiptPath: string, receipt: ProofBuil
       (file) => `<tr><td>${escapeHtml(file.path)}</td><td>${file.bytes.toLocaleString()}</td><td><code>${escapeHtml(shortHash(file.sha256))}</code></td></tr>`,
     )
     .join("");
+  const storageCopies = receipt.filecoin?.copies
+    .map(
+      (copy) => `<div><dt>Provider ${escapeHtml(copy.providerId)}</dt><dd>dataset <code>${escapeHtml(copy.dataSetId)}</code>, piece <code>${escapeHtml(copy.pieceId)}</code>${copy.transactionHash ? `<br>tx <code>${escapeHtml(copy.transactionHash)}</code>` : ""}</dd></div>`,
+    )
+    .join("");
   const storage = receipt.filecoin
     ? `<span class="pill good">FILECOIN VERIFIED</span>
        <dl><div><dt>Piece CID</dt><dd><code>${escapeHtml(receipt.filecoin.pieceCid)}</code></dd></div>
        <div><dt>Network</dt><dd>${escapeHtml(receipt.filecoin.network)}</dd></div>
+       <div><dt>Publisher</dt><dd><code>${escapeHtml(receipt.filecoin.publisher ?? "Legacy receipt")}</code></dd></div>
+       ${receipt.filecoin.preparationTransactionHash ? `<div><dt>Funding tx</dt><dd><code>${escapeHtml(receipt.filecoin.preparationTransactionHash)}</code></dd></div>` : ""}
        <div><dt>Copies</dt><dd>${receipt.filecoin.copies.length}</dd></div>
+       ${storageCopies}
        <div><dt>Upload complete</dt><dd>${receipt.filecoin.complete ? "Yes" : "Partial"}</dd></div></dl>`
     : `<span class="pill local">LOCAL CAPSULE</span><p>Run <code>proofbuild publish ${escapeHtml(receipt.id)}</code> to store this capsule on Filecoin.</p>`;
 
