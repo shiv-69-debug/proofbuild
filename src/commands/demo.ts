@@ -17,7 +17,7 @@ export async function demoCommand(): Promise<void> {
   output.detail("Providers", DEMO.providers);
   output.detail("Manifest", `${DEMO.files} files`);
   output.step("Downloading the public build capsule from Filecoin");
-  const bytes = await downloadCapsule(DEMO.pieceCid, "calibration", false);
+  const bytes = await downloadWithRetries();
   if (bytes.byteLength !== DEMO.bytes) {
     throw new Error(`Downloaded size mismatch: expected ${DEMO.bytes}, received ${bytes.byteLength}`);
   }
@@ -29,4 +29,23 @@ export async function demoCommand(): Promise<void> {
   output.detail("Bytes", bytes.byteLength);
   output.detail("SHA-256", actualHash);
   output.success("Live Filecoin verification passed");
+}
+
+async function downloadWithRetries(): Promise<Uint8Array> {
+  const attempts = [false, false, true] as const;
+  let lastError: unknown;
+  for (let index = 0; index < attempts.length; index += 1) {
+    const withCDN = attempts[index] ?? false;
+    try {
+      return await downloadCapsule(DEMO.pieceCid, "calibration", withCDN);
+    } catch (error) {
+      lastError = error;
+      if (index < attempts.length - 1) {
+        const nextMethod = (attempts[index + 1] ?? false) ? " with Filecoin Beam" : "";
+        output.warning(`Retrieval attempt ${index + 1} failed; retrying${nextMethod}`);
+        await new Promise((resolve) => setTimeout(resolve, 2_000));
+      }
+    }
+  }
+  throw lastError;
 }
