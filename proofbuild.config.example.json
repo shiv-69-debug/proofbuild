@@ -1,8 +1,0 @@
-{
-  "projectName": "my-project",
-  "buildCommand": "npm test",
-  "include": ["**/*"],
-  "exclude": ["node_modules/**", ".git/**", ".proofbuild/**", ".env*", "*.pem", "*.key", "coverage/**", "*.log"],
-  "network": "calibration",
-  "withCDN": false
-}

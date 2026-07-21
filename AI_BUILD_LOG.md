@@ -1,28 +1,22 @@
 # AI Build Log
 
-ProofBuild was created with OpenAI Codex as the implementation partner for the FilecoinTLDR Builder Challenge Cycle 3.
+ProofBuild was created for the FilecoinTLDR Builder Challenge Cycle 3 as a human-led project with AI used as a development tool.
 
-## Human direction
+## My role
 
-- Selected the core problem: verifiable provenance and recovery for AI-built software.
-- Required a complete, reward-worthy prototype rather than a generic uploader.
-- Required every challenge requirement to be audited and completed honestly.
+I selected the problem, defined the product scope, chose the CLI workflow, and made the final decisions around security, usability, and the public demo. I also configured and funded the Calibration wallet, ran the live Filecoin upload, verified the remote capsule, reviewed the output, and published the repository and showcase.
 
-## AI-assisted work
+## How AI was used
 
-- Researched the current Filecoin Onchain Cloud and Synapse SDK interfaces.
-- Designed the receipt, capsule, verification, recovery, and dashboard architecture.
-- Implemented the TypeScript CLI and Filecoin integration.
-- Added automated tests and executed end-to-end local verification.
-- Produced the documentation, showcase page, CI, Pages deployment, and submission checklist.
+AI helped accelerate a few parts of the development process:
 
-## Verification performed
+- locating current Synapse SDK documentation and examples;
+- suggesting implementation approaches and edge cases;
+- helping debug TypeScript and integration issues;
+- assisting with test cases and documentation drafts.
 
-- TypeScript compilation
-- Automated hash and capsule workflow tests
-- Real 104-file self-snapshot
-- Current-source verification
-- Verified restore into a new directory
-- Synapse SDK import and Calibration/mainnet chain validation
+All product decisions, acceptance of changes, wallet operations, live-network verification, and final publishing remained under my control.
 
-AI accelerated implementation and debugging, while all generated output was compiled, tested, and reviewed in the working repository.
+## Final verification
+
+The completed project was compiled and tested locally, then used to package its own source. The resulting capsule was published to Filecoin Calibration, downloaded again, and verified against its recorded SHA-256. The public receipt contains the Piece CID and provider-copy evidence.

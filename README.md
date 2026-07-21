@@ -1,80 +1,79 @@
 # ProofBuild
 
-**A verifiable time capsule for AI-built software, powered by Filecoin Onchain Cloud.**
+[![CI](https://github.com/shiv-69-debug/proofbuild/actions/workflows/ci.yml/badge.svg)](https://github.com/shiv-69-debug/proofbuild/actions/workflows/ci.yml)
+[![Showcase](https://img.shields.io/badge/showcase-live-47d7ff)](https://shiv-69-debug.github.io/proofbuild/)
+[![Filecoin](https://img.shields.io/badge/Filecoin-Calibration-0090ff)](showcase/FILECOIN_PROOF.md)
 
-Public showcase: `https://shiv-69-debug.github.io/proofbuild/`
+ProofBuild creates verifiable, restorable build capsules and stores them on Filecoin Onchain Cloud.
 
-Source repository: `https://github.com/shiv-69-debug/proofbuild`
+It hashes the selected project files, records Git and build evidence, packages everything into a portable archive, and produces a receipt that can be checked locally or against a copy retrieved from Filecoin.
 
-Live Filecoin Piece CID: `bafkzcibe4oxagdb6aazxaflnd47kkym73pv3tvgh7sg34gbvcuhnhxunwobudilade`
+## Live proof
 
-ProofBuild packages a project, hashes every included file, records Git and build evidence, and creates a portable receipt. Capsules work completely offline and can optionally be uploaded to Filecoin Onchain Cloud through the official Synapse SDK for durable, independently retrievable storage.
+ProofBuild published its own release capsule to Filecoin Calibration and downloaded it again for byte-for-byte verification.
 
-## Why it exists
+| Field | Value |
+| --- | --- |
+| Piece CID | `bafkzcibe4oxagdb6aazxaflnd47kkym73pv3tvgh7sg34gbvcuhnhxunwobudilade` |
+| Capsule | 74,909 bytes, 116 files |
+| Storage | 2 provider copies, 0 failed attempts |
+| Verification | Remote SHA-256 match passed |
 
-Git records source history, but it does not preserve the exact build capsule, test output, AI session evidence, or a remotely verifiable copy of those artifacts. ProofBuild turns those materials into one restorable unit with a content integrity receipt.
-
-## Live Filecoin proof
-
-ProofBuild published its own 116-file challenge build to Filecoin Calibration with two provider copies. It then downloaded the capsule through the Synapse SDK and verified that its SHA-256 matched the local receipt. See `showcase/live-filecoin-receipt.json` for the sanitized machine-readable evidence.
+See [`showcase/FILECOIN_PROOF.md`](showcase/FILECOIN_PROOF.md) or the [machine-readable receipt](showcase/live-filecoin-receipt.json).
 
 ## Features
 
-- Deterministic file manifest with SHA-256 hashes
+- SHA-256 manifest for every included file
 - Git commit, branch, remote, and working-tree state
-- Captured build/test command, result, duration, and output log
-- Optional AI prompt or coding-session log attachment
-- Compressed build capsule and machine-readable JSON receipt
-- Filecoin Calibration and mainnet publishing
-- Filecoin remote download, verification, and recovery
-- Current-source comparison against a historical receipt
-- Shareable visual receipt dashboard
-- Offline-first operation; a wallet is needed only for Filecoin commands
-
-The implementation checklist is in [`FEATURES.md`](FEATURES.md).
+- Captured build or test command with output and status
+- Optional AI session or prompt-log attachment
+- Compressed, portable build capsules
+- Filecoin Calibration and mainnet support
+- Remote Filecoin verification and recovery
+- Source-tree comparison against historical receipts
+- Standalone HTML receipt dashboards
+- Local wallet creation and onchain balance checks
 
 ## Requirements
 
 - Node.js 22 or newer
-- Git, recommended but not required
-- For Filecoin publishing: a private key with FIL for gas and USDFC for storage payments
+- Git, recommended for provenance metadata
+- FIL for gas and USDFC for storage when publishing
 
-## Install and build
+## Installation
 
 ```bash
-git clone <your-proofbuild-repository>
+git clone https://github.com/shiv-69-debug/proofbuild.git
 cd proofbuild
 npm install
 npm run build
 npm link
 ```
 
-After linking, the `proofbuild` command is available globally on your machine.
+## Quick start
 
-## Five-minute local demo
-
-Run these commands inside any project:
+Inside the project you want to preserve:
 
 ```bash
 proofbuild init
-proofbuild snapshot --no-build --notes "First verifiable release"
+proofbuild snapshot --no-build --notes "Initial capsule"
 proofbuild list
 proofbuild verify <receipt-id> --source
 proofbuild view <receipt-id>
 proofbuild restore <receipt-id> --output ./restored-build
 ```
 
-By default, generated data is stored under:
+ProofBuild stores generated artifacts under `.proofbuild/`:
 
 ```text
 .proofbuild/
-├── capsules/   compressed build capsules
-├── evidence/   embedded manifests and optional AI logs
-├── logs/       build and test output
-└── receipts/   JSON receipts and HTML dashboards
+|-- capsules/   compressed build capsules
+|-- evidence/   manifests and attached evidence
+|-- logs/       build and test output
+`-- receipts/   JSON receipts and HTML dashboards
 ```
 
-## Configure a project
+## Configuration
 
 `proofbuild init` creates `proofbuild.config.json`:
 
@@ -82,31 +81,25 @@ By default, generated data is stored under:
 {
   "buildCommand": "npm test",
   "include": ["**/*"],
-  "exclude": ["node_modules/**", ".git/**", ".proofbuild/**", "*.log"],
+  "exclude": [
+    "node_modules/**",
+    ".git/**",
+    ".proofbuild/**",
+    ".env*",
+    "*.pem",
+    "*.key",
+    "*.log"
+  ],
   "network": "calibration",
   "withCDN": false
 }
 ```
 
-Change the build command for non-Node projects, for example:
+Set `buildCommand` to the project-specific validation command, such as `cargo test`, `go test ./...`, or `pytest`.
 
-```json
-{ "buildCommand": "cargo test" }
-```
+## Filecoin publishing
 
-## Attach AI development evidence
-
-```bash
-proofbuild snapshot --ai-log ./AI_BUILD_LOG.md --notes "Challenge submission build"
-```
-
-The supplied log is copied into the capsule and its SHA-256 is recorded in the receipt. Review the file before attaching it; do not include secrets or private conversations.
-
-## Publish to Filecoin Onchain Cloud
-
-Keep the wallet key in an environment variable. Never put it in the configuration file or commit it.
-
-PowerShell:
+Use an existing private key through an environment variable:
 
 ```powershell
 $env:PROOFBUILD_PRIVATE_KEY="0xYOUR_PRIVATE_KEY"
@@ -114,115 +107,80 @@ proofbuild doctor
 proofbuild snapshot --publish --network calibration
 ```
 
-To create a dedicated local Calibration wallet without exposing its key in terminal output:
+Or create a dedicated local test wallet:
 
 ```bash
 proofbuild wallet create
 proofbuild doctor
 ```
 
-This writes `.env.proofbuild`, which is excluded from Git and from every ProofBuild capsule. Fund the displayed address using the official Calibration tFIL and tUSDFC faucets.
+The generated `.env.proofbuild` file is excluded from Git and from build capsules. Fund the displayed address with FIL and USDFC before publishing.
 
-Bash:
-
-```bash
-export PROOFBUILD_PRIVATE_KEY="0xYOUR_PRIVATE_KEY"
-proofbuild doctor
-proofbuild snapshot --publish --network calibration
-```
-
-You can also publish an existing local receipt:
+Publish an existing local capsule with:
 
 ```bash
 proofbuild publish <receipt-id> --network calibration
 ```
 
-The Synapse SDK prepares the account for the capsule size, uploads the archive, and returns its Piece CID and storage-copy status. New users should start on Calibration testnet and fund the wallet with test FIL and test USDFC before publishing.
+## Verification and recovery
 
-## Verify storage
-
-Verify the local archive:
+Verify the local capsule:
 
 ```bash
 proofbuild verify <receipt-id>
 ```
 
-Download the capsule from Filecoin and compare it against the receipt:
+Download the Filecoin copy and compare its SHA-256:
 
 ```bash
 proofbuild verify <receipt-id> --remote
 ```
 
-Compare the current project files against the historical manifest:
+Compare current project files against the receipt:
 
 ```bash
 proofbuild verify <receipt-id> --source
 ```
 
-## Disaster recovery
-
-If the local capsule still exists, restore uses it directly:
+Restore a capsule:
 
 ```bash
 proofbuild restore <receipt-id> --output ./recovered
 ```
 
-If the local capsule has been deleted and the receipt has Filecoin metadata, ProofBuild downloads it from Filecoin, verifies its SHA-256, and then extracts it. A mismatched or corrupted archive is never restored.
+If the local archive is missing, ProofBuild downloads the Filecoin copy, verifies it, and then extracts it.
 
 ## Commands
 
 | Command | Purpose |
 | --- | --- |
-| `proofbuild init` | Create configuration and local directories |
-| `proofbuild snapshot` | Hash, test, package, and optionally publish a build |
+| `proofbuild init` | Initialize a project |
+| `proofbuild snapshot` | Test, hash, package, and optionally publish a build |
 | `proofbuild publish` | Upload an existing capsule to Filecoin |
 | `proofbuild verify` | Verify local, remote, or source-tree integrity |
-| `proofbuild restore` | Restore a verified local or remote capsule |
-| `proofbuild list` | List available receipts |
-| `proofbuild view` | Open the visual receipt dashboard |
-| `proofbuild doctor` | Check environment and publishing prerequisites |
-| `proofbuild wallet create` | Create an ignored local Calibration wallet file |
+| `proofbuild restore` | Restore a verified capsule |
+| `proofbuild list` | List project receipts |
+| `proofbuild view` | Open a receipt dashboard |
+| `proofbuild doctor` | Check configuration, wallet, and balances |
+| `proofbuild wallet create` | Create an ignored local test wallet |
 
-Run `proofbuild <command> --help` for all options.
-
-## Receipt model
-
-Each receipt includes:
-
-- Project identity and creation time
-- Git provenance
-- Build/test result and log hash
-- Per-file hashes
-- Capsule hash and byte size
-- Embedded evidence locations
-- Filecoin Piece CID, network, copy status, and upload time when published
-
-The receipt schema is versioned as `proofbuild-receipt/v1`.
-
-## Suggested challenge demo
-
-1. Run a project test suite.
-2. Create and publish a ProofBuild snapshot.
-3. Open the visual receipt.
-4. Change a tracked file and show `verify --source` failing.
-5. Delete the local capsule.
-6. Run `restore` and retrieve the original capsule from Filecoin.
-7. Show the restored source and matching SHA-256.
+Run `proofbuild <command> --help` for command-specific options.
 
 ## Security
 
-- Private keys are read only from `PROOFBUILD_PRIVATE_KEY` or `FILECOIN_PRIVATE_KEY`.
-- ProofBuild never writes the private key to a receipt, archive, or configuration file.
-- Capsule extraction disables preserved absolute paths and strips the archive prefix.
-- Always inspect AI logs and project files for credentials before publishing immutable data.
+- Private keys are read only from `.env.proofbuild`, `PROOFBUILD_PRIVATE_KEY`, or `FILECOIN_PRIVATE_KEY`.
+- Wallet keys are never written to receipts or capsules.
+- `.env*`, `*.pem`, and `*.key` are excluded by default.
+- Archives are verified before extraction.
+- Review attached logs before publishing immutable data.
 
 ## Development
 
 ```bash
-npm run build
-npm test
 npm run check
 ```
+
+The repository includes unit tests, an end-to-end local capsule test, CI, a GitHub Pages showcase, and a documented live Filecoin receipt.
 
 ## License
 
