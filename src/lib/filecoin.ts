@@ -1,9 +1,25 @@
 import { readFile } from "node:fs/promises";
 import { createPublicClient, formatEther, formatUnits, http, type Address } from "viem";
-import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
+import { privateKeyToAccount, toAccount } from "viem/accounts";
 import type { FilecoinCopy, FilecoinRecord, NetworkName } from "../types.js";
 
 type UnknownRecord = Record<string, unknown>;
+
+const PUBLIC_DEMO_ADDRESS: Address = "0x4Ce9FD2D0C4bDB4Bbc4bC5A4cFf102476696dE59";
+const UNUSED_SIGNATURE = `0x${"00".repeat(65)}` as const;
+
+const publicReadAccount = toAccount({
+  address: PUBLIC_DEMO_ADDRESS,
+  async signMessage() {
+    return UNUSED_SIGNATURE;
+  },
+  async signTransaction() {
+    return UNUSED_SIGNATURE;
+  },
+  async signTypedData() {
+    return UNUSED_SIGNATURE;
+  },
+});
 
 function readString(source: UnknownRecord, keys: string[]): string | undefined {
   for (const key of keys) {
@@ -41,7 +57,7 @@ async function createSynapse(network: NetworkName, withCDN: boolean, requireConf
     throw new Error("Set PROOFBUILD_PRIVATE_KEY before publishing.");
   }
   return sdk.Synapse.create({
-    account: privateKeyToAccount(privateKey ?? generatePrivateKey()),
+    account: privateKey ? privateKeyToAccount(privateKey) : publicReadAccount,
     source: "proofbuild",
     chain: network === "mainnet" ? sdk.mainnet : sdk.calibration,
     withCDN,
